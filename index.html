@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>☁ Mandarin Study Tracker</title>
+  <style>
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── Tokens ── */
+    :root {
+      --sky: #EAF4FB;
+      --sky-dark: #D0E8F5;
+      --cloud-blue: #B5D4F4;
+      --cloud-mid: #85B7EB;
+      --sun-gold: #EF9F27;
+      --sun-light: #FAC775;
+      --green: #1D9E75;
+      --green-bg: #E1F5EE;
+      --green-text: #085041;
+      --red: #E24B4A;
+      --red-bg: #FCEBEB;
+      --red-text: #791F1F;
+      --grey: #888780;
+      --grey-light: #D3D1C7;
+      --grey-mid: #B4B2A9;
+      --ink: #1A1A2E;
+      --ink-mid: #4A4A6A;
+      --ink-soft: #7A7A9A;
+      --border: #D8DCE8;
+      --border-light: #ECEEF5;
+      --card: #FFFFFF;
+      --bg: #F4F7FC;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --font: 'Segoe UI', system-ui, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      background-image:
+        radial-gradient(ellipse at 20% 10%, #D6EEFF 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 5%, #E8F4FF 0%, transparent 40%);
+      min-height: 100vh;
+      font-family: var(--font);
+      color: var(--ink);
+    }
+
+    .app {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem 3rem;
+    }
+
+    /* ── Header ── */
+    .hdr { margin-bottom: 1.5rem; }
+    .hdr h1 { font-size: 22px; font-weight: 600; color: var(--ink); letter-spacing: -0.3px; }
+    .hdr p { font-size: 13px; color: var(--ink-soft); margin-top: 4px; }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius);
+      padding: 1.1rem 1.25rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 1px 4px rgba(100,120,180,0.06);
+    }
+    .card h2 { font-size: 14px; font-weight: 600; margin-bottom: 10px; color: var(--ink); }
+
+    /* ── Setup ── */
+    .tabs { display: flex; gap: 6px; margin-bottom: 10px; }
+    .tab {
+      padding: 6px 16px; border-radius: 20px;
+      border: 1px solid var(--border); font-size: 12px;
+      cursor: pointer; background: transparent; color: var(--ink-soft);
+      transition: all 0.15s;
+    }
+    .tab.active {
+      background: var(--sky-dark); color: var(--ink);
+      border-color: var(--cloud-mid); font-weight: 600;
+    }
+    .name-row { display: flex; gap: 8px; }
+    .name-row input {
+      flex: 1; padding: 7px 11px; border-radius: var(--radius-sm);
+      border: 1px solid var(--border); font-size: 13px;
+      background: var(--bg); color: var(--ink);
+      outline: none; transition: border-color 0.15s;
+    }
+    .name-row input:focus { border-color: var(--cloud-mid); }
+    .name-row button {
+      padding: 7px 16px; font-size: 12px; font-weight: 600;
+      border-radius: var(--radius-sm); border: 1px solid var(--cloud-mid);
+      cursor: pointer; background: var(--sky-dark); color: var(--ink);
+      transition: background 0.15s;
+    }
+    .name-row button:hover { background: var(--cloud-blue); }
+
+    /* ── Sync bar ── */
+    .sync-bar {
+      display: flex; align-items: center; gap: 7px;
+      font-size: 11px; color: var(--ink-soft);
+      margin-bottom: .9rem; padding: 6px 12px;
+      border-radius: 20px; background: var(--card);
+      border: 1px solid var(--border-light);
+      box-shadow: 0 1px 3px rgba(100,120,180,0.05);
+    }
+    .sync-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #ccc; flex-shrink: 0; transition: background 0.3s;
+    }
+    .sync-dot.ok { background: var(--green); }
+    .sync-dot.err { background: var(--red); }
+    .sync-dot.loading { background: var(--sun-gold); animation: pulse 1s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+    .sync-bar button {
+      margin-left: auto; padding: 3px 10px; font-size: 10px;
+      border-radius: 10px; border: 1px solid var(--border);
+      background: transparent; cursor: pointer; color: var(--ink-soft);
+    }
+    .sync-bar button:hover { background: var(--sky); }
+
+    /* ── Banner ── */
+    .banner {
+      background: linear-gradient(135deg, var(--sky) 0%, #DCF0FF 100%);
+      border: 1px solid var(--cloud-blue);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      margin-bottom: 1rem;
+      display: flex; align-items: center;
+      justify-content: space-between; flex-wrap: wrap; gap: 10px;
+      box-shadow: 0 2px 8px rgba(100,160,220,0.12);
+    }
+    .banner-left { display: flex; align-items: center; gap: 12px; }
+    .banner-icon { line-height: 1; flex-shrink: 0; }
+    .banner-q { font-size: 14px; font-weight: 600; color: var(--ink); }
+    .banner-sub { font-size: 11px; color: var(--ink-soft); margin-top: 3px; }
+    .cbns { display: flex; gap: 7px; }
+    .byes {
+      padding: 7px 18px; border-radius: 20px;
+      border: 1.5px solid var(--green); background: var(--green-bg);
+      color: var(--green-text); font-size: 12px; font-weight: 600; cursor: pointer;
+      transition: background 0.15s;
+    }
+    .byes:hover { background: #c5ede0; }
+    .bno {
+      padding: 7px 18px; border-radius: 20px;
+      border: 1px solid var(--border); background: white;
+      color: var(--ink-soft); font-size: 12px; cursor: pointer;
+      transition: background 0.15s;
+    }
+    .bno:hover { background: var(--sky); }
+
+    /* ── Calendar nav ── */
+    .cal-nav-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: .8rem; }
+    .cal-nav-row h2 { font-size: 16px; font-weight: 600; color: var(--ink); }
+    .nav-btns { display: flex; gap: 5px; }
+    .nav-btns button {
+      padding: 5px 12px; border-radius: 20px;
+      border: 1px solid var(--border); background: var(--card);
+      cursor: pointer; color: var(--ink-soft); font-size: 12px;
+      transition: background 0.15s;
+    }
+    .nav-btns button:hover { background: var(--sky); }
+
+    /* ── Weekday labels ── */
+    .wkdays { display: grid; grid-template-columns: repeat(7, minmax(0,1fr)); gap: 3px; margin-bottom: 4px; }
+    .wkd { text-align: center; font-size: 10px; color: var(--ink-soft); padding: 3px 0; font-weight: 500; }
+
+    /* ── Calendar grid ── */
+    .cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0,1fr)); gap: 4px; }
+    .day-cell {
+      border: 1px solid var(--border-light); border-radius: var(--radius-sm);
+      padding: 4px; min-height: 104px; background: var(--card);
+      cursor: pointer; display: flex; flex-direction: column; align-items: center;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .day-cell:hover:not(.empty) { border-color: var(--cloud-mid); box-shadow: 0 2px 6px rgba(100,160,220,0.1); }
+    .day-cell.empty { border-color: transparent; background: transparent; cursor: default; }
+    .day-cell.today { border-color: var(--cloud-mid); box-shadow: 0 0 0 2px var(--sky-dark); }
+
+    .day-num { font-size: 10px; color: var(--ink-soft); text-align: center; margin-bottom: 2px; width: 100%; }
+    .day-cell.today .day-num { font-weight: 700; color: var(--ink); }
+
+    .cloud-area { margin: 3px 0 2px; line-height: 1; }
+
+    /* ── Session badges ── */
+    .session-badge {
+      font-size: 8.5px; text-align: center; border-radius: 4px;
+      padding: 2px 3px; margin: 2px 0; line-height: 1.3;
+      font-weight: 600; width: 100%;
+    }
+    .sb-super  { background: #E6F1FB; color: #0C447C; }
+    .sb-meetup { background: #EEEDFE; color: #3C3489; }
+    .sb-pres   { background: #FAEEDA; color: #633806; }
+    .sb-group  { background: #EAF3DE; color: #27500A; }
+
+    /* ── Pip / person indicators ── */
+    .pips { display: flex; flex-direction: column; gap: 2px; margin-top: auto; width: 100%; }
+    .pip {
+      display: flex; align-items: center; gap: 3px;
+      font-size: 9px; border-radius: 4px; padding: 1px 3px;
+    }
+    .pip.done    { background: var(--green-bg); color: var(--green-text); }
+    .pip.missed  { background: var(--red-bg);   color: var(--red-text); }
+    .pip.pending { background: var(--bg);        color: var(--ink-soft); }
+
+    /* ── Legend ── */
+    .legend-row { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 1rem; align-items: center; }
+    .leg { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--ink-soft); }
+
+    /* ── Stats ── */
+    .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 1rem; }
+    .stat {
+      background: linear-gradient(135deg, var(--sky) 0%, #E8F5FF 100%);
+      border: 1px solid var(--cloud-blue);
+      border-radius: var(--radius-sm); padding: 12px 14px;
+    }
+    .stat-lbl { font-size: 11px; color: var(--ink-soft); margin-bottom: 4px; display: flex; align-items: center; gap: 4px; }
+    .stat-val { font-size: 20px; font-weight: 700; color: var(--ink); }
+    .stat-sub { font-size: 10px; color: var(--ink-soft); margin-top: 2px; }
+
+    /* ── Schedule key ── */
+    .key-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .key-item { display: flex; align-items: flex-start; gap: 6px; font-size: 11px; color: var(--ink-soft); line-height: 1.4; }
+    .key-badge { padding: 2px 7px; border-radius: 4px; font-size: 10px; font-weight: 600; flex-shrink: 0; white-space: nowrap; }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      background: var(--ink); color: white;
+      border-radius: 20px; padding: 9px 20px; font-size: 13px;
+      opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 999;
+      white-space: nowrap;
+    }
+    .toast.show { opacity: 1; }
+
+    /* ── Responsive ── */
+    @media (max-width: 500px) {
+      .day-cell { min-height: 80px; }
+      .cloud-area svg { transform: scale(0.8); transform-origin: center; }
+      .cbns { flex-direction: column; }
+      .key-grid { grid-template-columns: 1fr; }
+      .stats-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <div class="hdr">
+    <h1>☁ Mandarin Study Tracker</h1>
+    <p>Check in daily — see each other's progress on the shared calendar</p>
+  </div>
+
+  <div class="card">
+    <h2>Who are you?</h2>
+    <div class="tabs">
+      <button class="tab active" onclick="switchUser(0)" id="tab0">Person 1</button>
+      <button class="tab" onclick="switchUser(1)" id="tab1">Person 2</button>
+    </div>
+    <div class="name-row">
+      <input type="text" id="nameInput" placeholder="Enter your name…" />
+      <button onclick="saveName()">Save</button>
+    </div>
+    <div id="nameSt" style="font-size:11px;color:var(--ink-soft);margin-top:6px"></div>
+  </div>
+
+  <div class="sync-bar">
+    <div class="sync-dot loading" id="syncDot"></div>
+    <span id="syncLabel">Connecting to database…</span>
+    <button onclick="fetchAll()">↻ Refresh</button>
+  </div>
+
+  <div class="banner" id="banner">
+    <div class="banner-left">
+      <div class="banner-icon" id="bannerIcon"></div>
+      <div>
+        <div class="banner-q" id="bannerQ">Did you complete today's session?</div>
+        <div class="banner-sub" id="bannerSub"></div>
+      </div>
+    </div>
+    <div class="cbns" id="cbns">
+      <button class="byes" onclick="logToday(true)">☁ Yes!</button>
+      <button class="bno"  onclick="logToday(false)">⛈ Not today</button>
+    </div>
+  </div>
+
+  <div class="cal-nav-row">
+    <h2 id="calTitle"></h2>
+    <div class="nav-btns">
+      <button onclick="changeMonth(-1)">‹ Prev</button>
+      <button onclick="changeMonth(1)">Next ›</button>
+    </div>
+  </div>
+
+  <div class="wkdays">
+    <div class="wkd">Sun</div><div class="wkd">Mon</div><div class="wkd">Tue</div>
+    <div class="wkd">Wed</div><div class="wkd">Thu</div><div class="wkd">Fri</div><div class="wkd">Sat</div>
+  </div>
+  <div class="cal-grid" id="calGrid"></div>
+
+  <div class="legend-row" id="legendRow"></div>
+  <div class="stats-row" id="statsRow"></div>
+
+  <div class="card" style="margin-top:1rem">
+    <h2>Schedule key</h2>
+    <div class="key-grid">
+      <div class="key-item"><span class="key-badge sb-meetup">Tue (alt)</span>Meetup: Song Lyrics / Papa Long / Memes / Free Study</div>
+      <div class="key-item"><span class="key-badge sb-pres">Wed (alt)</span>10-Minute Presentation</div>
+      <div class="key-item"><span class="key-badge sb-group">Fri</span>Language Group Meetup (optional)</div>
+      <div class="key-item"><span class="key-badge sb-super">Other days</span>30 Min SuperChinese</div>
+    </div>
+  </div>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+  // ─────────────────────────────────────────────
+  // CONFIGURATION — update these if you ever need
+  // to reconnect to a new Supabase project
+  // ─────────────────────────────────────────────
+  const SUPABASE_URL = 'https://ufqjxnifpqemzkvsfmhy.supabase.co/rest/v1';
+  const SUPABASE_KEY = 'sb_publishable_DyW740Q99Qy0gPz1ISv6hg_qN7LFulW';
+  // ─────────────────────────────────────────────
+
+  const HEADERS = {
+    'apikey': SUPABASE_KEY,
+    'Authorization': `Bearer ${SUPABASE_KEY}`,
+    'Content-Type': 'application/json',
+    'Prefer': 'resolution=merge-duplicates'
+  };
+
+  let curUser = 0, vMonth, vYear;
+  const now = new Date();
+  const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  vMonth = now.getMonth(); vYear = now.getFullYear();
+
+  const MEETUP_SESSIONS = ['Song Lyrics','Papa Long Episode','Meme Memorization','Free Study Session'];
+  const SCHED_END = new Date(2026, 7, 31);
+
+  let localNames = ['Person 1', 'Person 2'];
+  let localCheckins = {};
+
+  // ── SVG helpers ──
+  function starSvg(type, size) {
+    size = size || 14;
+    const paths = {
+      done:    { fill:'#EF9F27', stroke:'#BA7517' },
+      missed:  { fill:'#D3D1C7', stroke:'#888780' },
+      pending: { fill:'none',    stroke:'#B4B2A9'  }
+    };
+    const p = paths[type] || paths.pending;
+    const dash = type === 'pending' ? ' stroke-dasharray="3 2"' : '';
+    return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none">
+      <path d="M12 2l2.9 6.26L22 9.27l-5 5.14 1.18 7.09L12 18.27l-6.18 3.23L7 14.41 2 9.27l7.1-1.01L12 2z"
+        fill="${p.fill}" stroke="${p.stroke}" stroke-width="1.2" stroke-linejoin="round"${dash}/>
+    </svg>`;
+  }
+
+  const ICONS = {
+    done: `<svg width="38" height="32" viewBox="0 0 38 32" fill="none">
+      <ellipse cx="19" cy="22" rx="14" ry="8" fill="#B5D4F4"/>
+      <circle cx="13" cy="20" r="7" fill="#85B7EB"/>
+      <circle cx="19" cy="16" r="9" fill="#B5D4F4"/>
+      <circle cx="26" cy="19" r="7" fill="#85B7EB"/>
+      <ellipse cx="19" cy="23" rx="13" ry="6" fill="#B5D4F4"/>
+      <circle cx="11" cy="25" r="2" fill="white" opacity="0.6"/>
+      <circle cx="16" cy="27" r="1.5" fill="white" opacity="0.5"/>
+    </svg>`,
+    missed: `<svg width="38" height="38" viewBox="0 0 38 38" fill="none">
+      <ellipse cx="19" cy="18" rx="13" ry="8" fill="#888780"/>
+      <circle cx="13" cy="16" r="7" fill="#5F5E5A"/>
+      <circle cx="19" cy="12" r="9" fill="#888780"/>
+      <circle cx="26" cy="15" r="7" fill="#5F5E5A"/>
+      <ellipse cx="19" cy="19" rx="13" ry="6" fill="#888780"/>
+      <line x1="12" y1="28" x2="10" y2="36" stroke="#378ADD" stroke-width="2" stroke-linecap="round"/>
+      <line x1="17" y1="27" x2="15" y2="35" stroke="#378ADD" stroke-width="2" stroke-linecap="round"/>
+      <line x1="22" y1="27" x2="20" y2="35" stroke="#378ADD" stroke-width="2" stroke-linecap="round"/>
+      <line x1="27" y1="28" x2="25" y2="36" stroke="#378ADD" stroke-width="2" stroke-linecap="round"/>
+      <path d="M14 22 L18 26 L22 20" stroke="#E8C840" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>`,
+    pending: `<svg width="38" height="32" viewBox="0 0 38 32" fill="none">
+      <ellipse cx="19" cy="22" rx="14" ry="8" fill="#D3D1C7"/>
+      <circle cx="13" cy="20" r="7" fill="#B4B2A9"/>
+      <circle cx="19" cy="16" r="9" fill="#D3D1C7"/>
+      <circle cx="26" cy="19" r="7" fill="#B4B2A9"/>
+      <ellipse cx="19" cy="23" rx="13" ry="6" fill="#D3D1C7"/>
+      <circle cx="11" cy="25" r="2" fill="white" opacity="0.5"/>
+    </svg>`,
+    optional: `<svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+      <circle cx="18" cy="18" r="11" fill="#FAC775"/>
+      <circle cx="18" cy="18" r="8" fill="#EF9F27"/>
+      <g stroke="#FAC775" stroke-width="2" stroke-linecap="round">
+        <line x1="18" y1="2" x2="18" y2="5"/><line x1="18" y1="31" x2="18" y2="34"/>
+        <line x1="2" y1="18" x2="5" y2="18"/><line x1="31" y1="18" x2="34" y2="18"/>
+        <line x1="6.5" y1="6.5" x2="8.6" y2="8.6"/><line x1="27.4" y1="27.4" x2="29.5" y2="29.5"/>
+        <line x1="29.5" y1="6.5" x2="27.4" y2="8.6"/><line x1="8.6" y1="27.4" x2="6.5" y2="29.5"/>
+      </g>
+      <circle cx="18" cy="18" r="5" fill="#FAC775"/>
+    </svg>`,
+    upcoming: `<svg width="38" height="34" viewBox="0 0 38 34" fill="none">
+      <circle cx="10" cy="10" r="6" fill="#FAC775"/>
+      <g stroke="#FAC775" stroke-width="1.5" stroke-linecap="round">
+        <line x1="10" y1="1" x2="10" y2="3.5"/><line x1="10" y1="16.5" x2="10" y2="19"/>
+        <line x1="1" y1="10" x2="3.5" y2="10"/><line x1="16.5" y1="10" x2="19" y2="10"/>
+      </g>
+      <ellipse cx="22" cy="24" rx="13" ry="7" fill="#D3D1C7"/>
+      <circle cx="16" cy="22" r="6" fill="#B4B2A9"/>
+      <circle cx="22" cy="18" r="8" fill="#D3D1C7"/>
+      <circle cx="29" cy="21" r="6" fill="#B4B2A9"/>
+      <ellipse cx="22" cy="25" rx="12" ry="5.5" fill="#D3D1C7"/>
+    </svg>`
+  };
+
+  // ── Sync status ──
+  function setSyncStatus(state, msg) {
+    document.getElementById('syncDot').className = 'sync-dot ' + state;
+    document.getElementById('syncLabel').textContent = msg;
+  }
+
+  function toast(msg) {
+    const el = document.getElementById('toast');
+    el.textContent = msg; el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2600);
+  }
+
+  // ── Supabase helpers ──
+  async function sbGet(table, params = '') {
+    const r = await fetch(`${SUPABASE_URL}/${table}?${params}`, { headers: HEADERS });
+    if (!r.ok) throw new Error(await r.text());
+    return r.json();
+  }
+  async function sbUpsert(table, body) {
+    const r = await fetch(`${SUPABASE_URL}/${table}`, {
+      method: 'POST',
+      headers: { ...HEADERS, 'Prefer': 'resolution=merge-duplicates' },
+      body: JSON.stringify(body)
+    });
+    if (!r.ok) throw new Error(await r.text());
+  }
+  async function sbDelete(table, params) {
+    const r = await fetch(`${SUPABASE_URL}/${table}?${params}`, {
+      method: 'DELETE', headers: HEADERS
+    });
+    if (!r.ok) throw new Error(await r.text());
+  }
+
+  async function fetchAll() {
+    setSyncStatus('loading', 'Syncing…');
+    try {
+      const [names, checkins] = await Promise.all([
+        sbGet('user_names', 'order=user_index'),
+        sbGet('checkins', 'order=date')
+      ]);
+      localNames = ['Person 1', 'Person 2'];
+      names.forEach(n => { localNames[n.user_index] = n.name; });
+      localCheckins = {};
+      checkins.forEach(c => { localCheckins[`${c.user_index}_${c.date}`] = c.completed; });
+      document.getElementById('tab0').textContent = localNames[0];
+      document.getElementById('tab1').textContent = localNames[1];
+      document.getElementById('nameInput').value = localNames[curUser] === `Person ${curUser+1}` ? '' : localNames[curUser];
+      setSyncStatus('ok', `Synced · ${new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}`);
+      updateBanner(); renderCalendar(); renderStats();
+    } catch(e) {
+      setSyncStatus('err', 'Sync failed — check Supabase setup');
+      console.error(e);
+    }
+  }
+
+  // ── Schedule logic ──
+  let tueCounts = {};
+  function getTueNumber(d) {
+    if (d.getDay() !== 2) return null;
+    const ref = new Date(2026, 4, 12);
+    if (d < ref) return null;
+    const key = d.toDateString();
+    if (tueCounts[key] !== undefined) return tueCounts[key];
+    let count = 0, cur = new Date(ref);
+    while (cur <= d) {
+      if (cur.getDay() === 2) {
+        if (cur.toDateString() === d.toDateString()) { tueCounts[key] = count; return count; }
+        count++;
+      }
+      cur.setDate(cur.getDate() + 1);
+    }
+    return null;
+  }
+
+  function getSchedule(dateObj) {
+    if (dateObj > SCHED_END) return null;
+    const dow = dateObj.getDay();
+    if (dow === 2) {
+      const n = getTueNumber(dateObj);
+      if (n !== null && n % 2 === 0) {
+        return { type:'meetup', label: MEETUP_SESSIONS[Math.floor(n/2) % 4], short:'Meetup', cls:'sb-meetup' };
+      }
+    }
+    if (dow === 3) {
+      const pt = new Date(dateObj); pt.setDate(dateObj.getDate() - 1);
+      const n = getTueNumber(pt);
+      if (n !== null && n % 2 !== 0) return { type:'pres', label:'10-Min Presentation', short:'Presentation', cls:'sb-pres' };
+    }
+    if (dow === 5) return { type:'group', label:'Language Group Meetup (optional)', short:'Group Meetup', cls:'sb-group' };
+    return { type:'super', label:'30 Min SuperChinese', short:'SuperChinese', cls:'sb-super' };
+  }
+
+  // ── User switching ──
+  function switchUser(i) {
+    curUser = i;
+    document.querySelectorAll('.tab').forEach((t, j) => t.classList.toggle('active', j === i));
+    document.getElementById('nameInput').value = localNames[i] === `Person ${i+1}` ? '' : localNames[i];
+    document.getElementById('nameSt').textContent = '';
+    updateBanner(); renderCalendar(); renderStats();
+  }
+
+  async function saveName() {
+    const v = document.getElementById('nameInput').value.trim();
+    if (!v) return;
+    localNames[curUser] = v;
+    document.getElementById(`tab${curUser}`).textContent = v;
+    document.getElementById('nameSt').textContent = `Saved as "${v}"`;
+    try {
+      await sbUpsert('user_names', { user_index: curUser, name: v, updated_at: new Date().toISOString() });
+      setSyncStatus('ok', `Synced · ${new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}`);
+    } catch(e) { setSyncStatus('err', 'Save failed'); }
+    updateBanner(); renderCalendar(); renderStats();
+  }
+
+  // ── Banner ──
+  function updateBanner() {
+    const name = localNames[curUser];
+    const val = localCheckins[`${curUser}_${todayStr}`];
+    const sched = getSchedule(new Date(now.getFullYear(), now.getMonth(), now.getDate()));
+    const q = document.getElementById('bannerQ'), sub = document.getElementById('bannerSub'),
+          cbns = document.getElementById('cbns'), icon = document.getElementById('bannerIcon');
+    sub.textContent = `Today: ${sched ? sched.label : 'Study session'}`;
+    if (val === true) {
+      q.textContent = `${name} completed today's session!`; q.style.color = '#085041';
+      icon.innerHTML = ICONS.done;
+      cbns.innerHTML = `<button class="byes" onclick="logToday(true)">Change to yes</button><button class="bno" onclick="logToday(false)">Change to no</button>`;
+    } else if (val === false) {
+      q.textContent = `${name} missed today's session.`; q.style.color = '#A32D2D';
+      icon.innerHTML = ICONS.missed;
+      cbns.innerHTML = `<button class="byes" onclick="logToday(true)">Change to yes</button><button class="bno" onclick="logToday(false)">Change to no</button>`;
+    } else {
+      q.textContent = `${name}, did you complete today's session?`; q.style.color = '';
+      icon.innerHTML = ICONS.pending;
+      cbns.innerHTML = `<button class="byes" onclick="logToday(true)">☁ Yes!</button><button class="bno" onclick="logToday(false)">⛈ Not today</button>`;
+    }
+  }
+
+  async function logToday(done) {
+    localCheckins[`${curUser}_${todayStr}`] = done;
+    updateBanner(); renderCalendar(); renderStats();
+    setSyncStatus('loading', 'Saving…');
+    try {
+      await sbUpsert('checkins', { id:`${curUser}_${todayStr}`, user_index:curUser, date:todayStr, completed:done, updated_at:new Date().toISOString() });
+      setSyncStatus('ok', `Synced · ${new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}`);
+      toast(done ? `Logged! ${localNames[1-curUser]} will see your star ✨` : 'Logged as missed. Tomorrow is a new sky!');
+    } catch(e) { setSyncStatus('err', 'Save failed — try refreshing'); }
+  }
+
+  async function toggleDay(ds) {
+    const key = `${curUser}_${ds}`;
+    const cur = localCheckins[key];
+    const next = cur === true ? false : cur === false ? undefined : true;
+    if (next === undefined) delete localCheckins[key]; else localCheckins[key] = next;
+    renderCalendar(); renderStats();
+    setSyncStatus('loading', 'Saving…');
+    try {
+      if (next === undefined) { await sbDelete('checkins', `id=eq.${curUser}_${ds}`); }
+      else { await sbUpsert('checkins', { id:`${curUser}_${ds}`, user_index:curUser, date:ds, completed:next, updated_at:new Date().toISOString() }); }
+      setSyncStatus('ok', `Synced · ${new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}`);
+      toast('Updated! Click again to cycle through states.');
+    } catch(e) { setSyncStatus('err', 'Save failed'); }
+  }
+
+  function changeMonth(dir) {
+    vMonth += dir;
+    if (vMonth > 11) { vMonth = 0; vYear++; }
+    if (vMonth < 0)  { vMonth = 11; vYear--; }
+    renderCalendar();
+  }
+
+  function renderCalendar() {
+    const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    document.getElementById('calTitle').textContent = `${months[vMonth]} ${vYear}`;
+    const grid = document.getElementById('calGrid'); grid.innerHTML = '';
+    const firstDay = new Date(vYear, vMonth, 1).getDay();
+    const daysInMonth = new Date(vYear, vMonth+1, 0).getDate();
+
+    for (let i = 0; i < firstDay; i++) {
+      const e = document.createElement('div'); e.className = 'day-cell empty'; grid.appendChild(e);
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const ds = `${vYear}-${String(vMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+      const dateObj = new Date(vYear, vMonth, day);
+      const isToday = ds === todayStr, isPast = ds <= todayStr;
+      const sched = getSchedule(dateObj);
+      const isOptional = sched && sched.type === 'group';
+
+      const el = document.createElement('div');
+      el.className = 'day-cell' + (isToday ? ' today' : '');
+
+      const numEl = document.createElement('div'); numEl.className = 'day-num'; numEl.textContent = day; el.appendChild(numEl);
+
+      if (sched) {
+        const badge = document.createElement('div');
+        badge.className = `session-badge ${sched.cls}`; badge.textContent = sched.short; el.appendChild(badge);
+      }
+
+      const cloudArea = document.createElement('div'); cloudArea.className = 'cloud-area';
+      if (sched) {
+        if (isPast) {
+          const p0 = localCheckins[`0_${ds}`], p1 = localCheckins[`1_${ds}`];
+          cloudArea.innerHTML = (p0===true && p1===true) ? ICONS.done : (p0===false || p1===false) ? ICONS.missed : ICONS.pending;
+        } else {
+          cloudArea.innerHTML = isOptional ? ICONS.optional : ICONS.upcoming;
+        }
+      }
+      el.appendChild(cloudArea);
+
+      if (isPast && sched) {
+        const pipsEl = document.createElement('div'); pipsEl.className = 'pips';
+        localNames.forEach((name, ui) => {
+          const val = localCheckins[`${ui}_${ds}`];
+          const pip = document.createElement('div');
+          const shortName = name.length > 8 ? name.slice(0,7) + '…' : name;
+          pip.className = 'pip ' + (val===true ? 'done' : val===false ? 'missed' : 'pending');
+          pip.innerHTML = `${starSvg(val===true?'done':val===false?'missed':'pending', 11)}<span>${shortName}</span>`;
+          pipsEl.appendChild(pip);
+        });
+        el.appendChild(pipsEl);
+      }
+
+      if ((isToday || isPast) && sched) {
+        el.onclick = () => { if (isToday) logToday(localCheckins[`${curUser}_${ds}`] !== true); else toggleDay(ds); };
+      }
+      grid.appendChild(el);
+    }
+  }
+
+  function renderStats() {
+    const row = document.getElementById('statsRow'); row.innerHTML = '';
+    localNames.forEach((name, ui) => {
+      const keys = Object.keys(localCheckins).filter(k => k.startsWith(`${ui}_`));
+      const done = keys.filter(k => localCheckins[k] === true).length;
+      const total = keys.length;
+      const pct = total > 0 ? Math.round((done/total)*100) : 0;
+      const card = document.createElement('div'); card.className = 'stat';
+      card.innerHTML = `<div class="stat-lbl">${starSvg('done',13)} ${name}</div>
+        <div class="stat-val">${done}<span style="font-size:13px;font-weight:400;color:var(--ink-soft)"> / ${total} days</span></div>
+        <div class="stat-sub">${pct}% completion rate</div>`;
+      row.appendChild(card);
+    });
+
+    document.getElementById('legendRow').innerHTML = `
+      <div class="leg">${ICONS.done.replace('width="38"','width="28"').replace('height="32"','height="24"')} Both done</div>
+      <div class="leg">${ICONS.missed.replace('width="38"','width="28"').replace('height="38"','height="28"')} Someone missed</div>
+      <div class="leg">${ICONS.pending.replace('width="38"','width="28"').replace('height="32"','height="24"')} Pending</div>
+      <div class="leg">${ICONS.optional.replace('width="36"','width="24"').replace('height="36"','height="24"')} Optional</div>
+      <div class="leg">${starSvg('done',13)} Done &nbsp;${starSvg('missed',13)} Missed &nbsp;${starSvg('pending',13)} Pending (per person)</div>
+    `;
+  }
+
+  // Kick off
+  fetchAll();
+  // Auto-refresh every 30 seconds to catch the other person's updates
+  setInterval(fetchAll, 30000);
+</script>
+</body>
+</html>

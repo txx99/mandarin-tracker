@@ -12,8 +12,8 @@
     :root {
       --sky: #EAF4FB;
       --sky-dark: #D0E8F5;
-      --cloud-blue: #F3CFC6;
-      --cloud-mid: #F88379;
+      --cloud-blue: #87C1F5;
+      --cloud-mid: #2795F5;
       --sun-gold: #EF9F27;
       --sun-light: #FAC775;
       --green: #1D9E75;
@@ -24,7 +24,7 @@
       --red-text: #791F1F;
       --grey: #C9A9A6;
       --grey-light: #D3D1C7;
-      --grey-mid: #B4B2A9;
+      --grey-mid: #B8C9D6;
       --ink: #1A1A2E;
       --ink-mid: #4A4A6A;
       --ink-soft: #7A7A9A;
@@ -359,7 +359,7 @@
     const paths = {
       done:    { fill:'#EF9F27', stroke:'#BA7517' },
       missed:  { fill:'#D3D1C7', stroke:'#888780' },
-      pending: { fill:'none',    stroke:'#B4B2A9'  }
+      pending: { fill:'none',    stroke:'#B8C9D6'  }
     };
     const p = paths[type] || paths.pending;
     const dash = type === 'pending' ? ' stroke-dasharray="3 2"' : '';
@@ -371,11 +371,11 @@
 
   const ICONS = {
     done: `<svg width="38" height="32" viewBox="0 0 38 32" fill="none">
-      <ellipse cx="19" cy="22" rx="14" ry="8" fill="#B5D4F4"/>
-      <circle cx="13" cy="20" r="7" fill="#85B7EB"/>
-      <circle cx="19" cy="16" r="9" fill="#B5D4F4"/>
-      <circle cx="26" cy="19" r="7" fill="#85B7EB"/>
-      <ellipse cx="19" cy="23" rx="13" ry="6" fill="#B5D4F4"/>
+      <ellipse cx="19" cy="22" rx="14" ry="8" fill="#FFC0CB"/>
+      <circle cx="13" cy="20" r="7" fill="#F88379"/>
+      <circle cx="19" cy="16" r="9" fill="#FFC0CB"/>
+      <circle cx="26" cy="19" r="7" fill="#F88379"/>
+      <ellipse cx="19" cy="23" rx="13" ry="6" fill="#FFC0CB"/>
       <circle cx="11" cy="25" r="2" fill="white" opacity="0.6"/>
       <circle cx="16" cy="27" r="1.5" fill="white" opacity="0.5"/>
     </svg>`,
@@ -392,11 +392,11 @@
       <path d="M14 22 L18 26 L22 20" stroke="#E8C840" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>`,
     pending: `<svg width="38" height="32" viewBox="0 0 38 32" fill="none">
-      <ellipse cx="19" cy="22" rx="14" ry="8" fill="#D3D1C7"/>
-      <circle cx="13" cy="20" r="7" fill="#B4B2A9"/>
-      <circle cx="19" cy="16" r="9" fill="#D3D1C7"/>
-      <circle cx="26" cy="19" r="7" fill="#B4B2A9"/>
-      <ellipse cx="19" cy="23" rx="13" ry="6" fill="#D3D1C7"/>
+      <ellipse cx="19" cy="22" rx="14" ry="8" fill="#E1EAF2"/>
+      <circle cx="13" cy="20" r="7" fill="#B8C9D6"/>
+      <circle cx="19" cy="16" r="9" fill="#E1EAF2"/>
+      <circle cx="26" cy="19" r="7" fill="#B8C9D6"/>
+      <ellipse cx="19" cy="23" rx="13" ry="6" fill="#E1EAF2"/>
       <circle cx="11" cy="25" r="2" fill="white" opacity="0.5"/>
     </svg>`,
     optional: `<svg width="36" height="36" viewBox="0 0 36 36" fill="none">
@@ -410,17 +410,13 @@
       </g>
       <circle cx="18" cy="18" r="5" fill="#FAC775"/>
     </svg>`,
-    upcoming: `<svg width="38" height="34" viewBox="0 0 38 34" fill="none">
-      <circle cx="10" cy="10" r="6" fill="#FAC775"/>
-      <g stroke="#FAC775" stroke-width="1.5" stroke-linecap="round">
-        <line x1="10" y1="1" x2="10" y2="3.5"/><line x1="10" y1="16.5" x2="10" y2="19"/>
-        <line x1="1" y1="10" x2="3.5" y2="10"/><line x1="16.5" y1="10" x2="19" y2="10"/>
-      </g>
-      <ellipse cx="22" cy="24" rx="13" ry="7" fill="#D3D1C7"/>
-      <circle cx="16" cy="22" r="6" fill="#B4B2A9"/>
-      <circle cx="22" cy="18" r="8" fill="#D3D1C7"/>
-      <circle cx="29" cy="21" r="6" fill="#B4B2A9"/>
-      <ellipse cx="22" cy="25" rx="12" ry="5.5" fill="#D3D1C7"/>
+    upcoming: `<svg width="38" height="32" viewBox="0 0 38 32" fill="none">
+      <ellipse cx="19" cy="22" rx="14" ry="8" fill="#E1EAF2"/>
+      <circle cx="13" cy="20" r="7" fill="#B8C9D6"/>
+      <circle cx="19" cy="16" r="9" fill="#E1EAF2"/>
+      <circle cx="26" cy="19" r="7" fill="#B8C9D6"/>
+      <ellipse cx="19" cy="23" rx="13" ry="6" fill="#E1EAF2"/>
+      <circle cx="11" cy="25" r="2" fill="white" opacity="0.5"/>
     </svg>`
   };
 

@@ -12,8 +12,8 @@
     :root {
       --sky: #EAF4FB;
       --sky-dark: #D0E8F5;
-      --cloud-blue: #B5D4F4;
-      --cloud-mid: #85B7EB;
+      --cloud-blue: #F3CFC6;
+      --cloud-mid: #F88379;
       --sun-gold: #EF9F27;
       --sun-light: #FAC775;
       --green: #1D9E75;
@@ -22,7 +22,7 @@
       --red: #E24B4A;
       --red-bg: #FCEBEB;
       --red-text: #791F1F;
-      --grey: #888780;
+      --grey: #C9A9A6;
       --grey-light: #D3D1C7;
       --grey-mid: #B4B2A9;
       --ink: #1A1A2E;
@@ -339,6 +339,15 @@
   vMonth = now.getMonth(); vYear = now.getFullYear();
 
   const MEETUP_SESSIONS = ['Song Lyrics','Papa Long Episode','Meme Memorization','Free Study Session'];
+    // Seeded random so every device gets the same assignment for each Tuesday
+  function seededRandom(seed) {
+    const x = Math.sin(seed + 1) * 10000;
+    return x - Math.floor(x);
+  }
+  function getRandomSession(tueIndex) {
+    const idx = Math.floor(seededRandom(tueIndex) * MEETUP_SESSIONS.length);
+    return MEETUP_SESSIONS[idx];
+  }
   const SCHED_END = new Date(2026, 7, 31);
 
   let localNames = ['Person 1', 'Person 2'];
@@ -495,8 +504,7 @@
     if (dow === 2) {
       const n = getTueNumber(dateObj);
       if (n !== null && n % 2 === 0) {
-        return { type:'meetup', label: MEETUP_SESSIONS[Math.floor(n/2) % 4], short:'Meetup', cls:'sb-meetup' };
-      }
+        return { type:'meetup', label: getRandomSession(Math.floor(n/2)), short:'Meetup', cls:'sb-meetup' };      }
     }
     if (dow === 3) {
       const pt = new Date(dateObj); pt.setDate(dateObj.getDate() - 1);

@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Henna Practice Schedule 2026</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream:      #FAF6EF;
+      --parchment:  #F0E9DA;
+      --ink:        #2A1F14;
+      --ink-light:  #6B5744;
+      --henna:      #8B2E0A;
+      --henna-mid:  #C05020;
+      --henna-pale: #F3DDD4;
+      --leaf:       #3B5C1A;
+      --leaf-pale:  #DCE9CC;
+      --thu-bg:     #E8EEF8;
+      --thu-ink:    #183B7A;
+      --border:     rgba(42,31,20,0.12);
+    }
+
+    body {
+      background: var(--cream);
+      color: var(--ink);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      min-height: 100vh;
+      padding: 2.5rem 1.5rem 4rem;
+    }
+
+    /* ── Header ── */
+    header {
+      max-width: 860px;
+      margin: 0 auto 2.5rem;
+      border-bottom: 1.5px solid var(--henna);
+      padding-bottom: 1.2rem;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .header-left h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.9rem, 5vw, 2.8rem);
+      font-weight: 500;
+      line-height: 1.1;
+      color: var(--henna);
+      letter-spacing: -0.01em;
+    }
+
+    .header-left p {
+      font-size: 12px;
+      color: var(--ink-light);
+      margin-top: 3px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .mango-header {
+      display: flex;
+      gap: 6px;
+      opacity: 0.6;
+    }
+
+    /* ── Legend ── */
+    .legend {
+      max-width: 860px;
+      margin: 0 auto 1.8rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 20px;
+      font-size: 11.5px;
+      color: var(--ink-light);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ── Calendar layout ── */
+    .calendar {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    .month-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--ink-light);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin: 1.8rem 0 0.5rem;
+    }
+
+    .month-title:first-child { margin-top: 0; }
+
+    .dow-row {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 3px;
+      margin-bottom: 3px;
+    }
+
+    .dow-cell {
+      text-align: center;
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      padding: 2px 0;
+    }
+
+    .week-row {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 3px;
+      margin-bottom: 3px;
+    }
+
+    .day {
+      min-height: 80px;
+      border-radius: 6px;
+      border: 0.5px solid var(--border);
+      background: #FFFFFF;
+      padding: 5px 6px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .day.empty {
+      background: transparent;
+      border-color: transparent;
+    }
+
+    .day.weekend-bg {
+      background: var(--parchment);
+    }
+
+    .day-num {
+      font-size: 11px;
+      color: var(--ink-light);
+      margin-bottom: 3px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Session pills */
+    .pill {
+      display: block;
+      border-radius: 3px;
+      padding: 2px 5px;
+      margin-bottom: 2px;
+      font-size: 10px;
+      font-weight: 500;
+      line-height: 1.4;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .pill-thu  { background: var(--thu-bg);    color: var(--thu-ink); }
+    .pill-wknd { background: var(--leaf-pale); color: var(--leaf); }
+    .pill-sha  { background: var(--henna-pale); color: var(--henna); }
+
+    .day-type-label {
+      font-size: 8.5px;
+      color: var(--ink-light);
+      opacity: 0.7;
+      margin-top: 1px;
+      letter-spacing: 0.03em;
+    }
+
+    .unavail-mark {
+      position: absolute;
+      top: 4px;
+      right: 5px;
+      font-size: 9px;
+      color: var(--ink-light);
+      opacity: 0.5;
+    }
+
+    .mango-icon {
+      position: absolute;
+      bottom: 3px;
+      right: 3px;
+      opacity: 0.5;
+    }
+
+    /* ── Summary ── */
+    .summary {
+      max-width: 860px;
+      margin: 2rem auto 0;
+      background: var(--parchment);
+      border-radius: 10px;
+      border: 0.5px solid var(--border);
+      padding: 1.2rem;
+    }
+
+    .summary h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--ink-light);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 0.9rem;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .summary-card {
+      background: #fff;
+      border-radius: 7px;
+      border: 0.5px solid var(--border);
+      padding: 8px 12px;
+    }
+
+    .summary-name {
+      font-size: 11px;
+      font-weight: 500;
+      margin-bottom: 1px;
+    }
+
+    .summary-count {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;
+      font-weight: 400;
+      line-height: 1.2;
+      color: var(--ink);
+    }
+
+    .summary-label {
+      font-size: 10px;
+      color: var(--ink-light);
+    }
+
+    .summary-dates {
+      font-size: 9px;
+      color: var(--ink-light);
+      margin-top: 3px;
+      line-height: 1.5;
+    }
+
+    /* ── Note ── */
+    .note {
+      max-width: 860px;
+      margin: 1.2rem auto 0;
+      font-size: 11px;
+      color: var(--ink-light);
+      opacity: 0.8;
+    }
+
+    @media (max-width: 500px) {
+      .day { min-height: 60px; padding: 3px 4px; }
+      .pill { font-size: 8.5px; padding: 1px 3px; }
+      .day-type-label, .mango-icon { display: none; }
+      .summary-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <h1>Henna Practice</h1>
+    <p>June 19 – August 8, 2026 &nbsp;·&nbsp; 6 people</p>
+  </div>
+  <div class="mango-header" aria-hidden="true">
+    <svg width="28" height="32" viewBox="0 0 24 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 25C7 25 4 19.5 4 14.5c0-5 2.5-10 8-10 5.5 0 8 5 8 10 0 5-3 10.5-8 10.5z" fill="#C05020"/>
+      <path d="M12 4.5C10 4.5 8.5 3 8 2c1 .5 2.5.5 3-.5C11.5 2.5 12 3.5 12 4.5z" fill="#3B5C1A"/>
+      <path d="M11 6C9 5 7 4 6.5 3c.5.3 3 2 4.5 3z" fill="#3B5C1A"/>
+      <path d="M13 6C15 5 17 4 17.5 3c-.5.3-3 2-4.5 3z" fill="#3B5C1A"/>
+      <ellipse cx="10" cy="16" rx="1.5" ry="2.8" fill="#E8906A" opacity="0.6"/>
+    </svg>
+    <svg width="28" height="32" viewBox="0 0 24 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 25C7 25 4 19.5 4 14.5c0-5 2.5-10 8-10 5.5 0 8 5 8 10 0 5-3 10.5-8 10.5z" fill="#8B2E0A"/>
+      <path d="M12 4.5C10 4.5 8.5 3 8 2c1 .5 2.5.5 3-.5C11.5 2.5 12 3.5 12 4.5z" fill="#3B5C1A"/>
+      <path d="M11 6C9 5 7 4 6.5 3c.5.3 3 2 4.5 3z" fill="#3B5C1A"/>
+      <path d="M13 6C15 5 17 4 17.5 3c-.5.3-3 2-4.5 3z" fill="#3B5C1A"/>
+      <ellipse cx="10" cy="16" rx="1.5" ry="2.8" fill="#E8906A" opacity="0.6"/>
+    </svg>
+  </div>
+</header>
+
+<div class="legend">
+  <div class="legend-item">
+    <div class="legend-dot" style="background:#183B7A"></div>
+    Thursday evening (1 person)
+  </div>
+  <div class="legend-item">
+    <div class="legend-dot" style="background:#3B5C1A"></div>
+    Weekend session (2 people)
+  </div>
+  <div class="legend-item">
+    <div class="legend-dot" style="background:#8B2E0A"></div>
+    Sha weekend ★ (travel)
+  </div>
+  <div class="legend-item" style="gap:4px">
+    <span style="font-size:11px;opacity:0.6">✕</span>
+    Unavailable evening
+  </div>
+</div>
+
+<div class="calendar" id="calendar"></div>
+
+<div class="summary">
+  <h2>Sessions per person</h2>
+  <div class="summary-grid" id="summary"></div>
+</div>
+
+<p class="note">★ Jul 4 &amp; 5: Sha appears on both days (travel weekend — deliberate exception to the 7-day gap rule). All other gaps ≥ 7 days.</p>
+
+<script>
+  // ── Data ──────────────────────────────────────────────────────────
+  const SESSIONS = {
+    '2026-06-21': { type: 'sha',  people: ['Sha', 'Sukh'] },
+    '2026-06-25': { type: 'thu',  people: ['N'] },
+    '2026-06-28': { type: 'wknd', people: ['Sukh', 'B'] },
+    '2026-07-02': { type: 'thu',  people: ['Chachiji'] },
+    '2026-07-04': { type: 'sha',  people: ['Sha', 'D'] },
+    '2026-07-05': { type: 'sha',  people: ['Sha', 'Sukh'] },
+    '2026-07-09': { type: 'thu',  people: ['N'] },
+    '2026-07-12': { type: 'wknd', people: ['B', 'Chachiji'] },
+    '2026-07-16': { type: 'thu',  people: ['D'] },
+    '2026-07-19': { type: 'sha',  people: ['Sha', 'B'] },
+    '2026-07-23': { type: 'thu',  people: ['Chachiji'] },
+    '2026-07-26': { type: 'wknd', people: ['Sukh', 'N'] },
+    '2026-07-30': { type: 'thu',  people: ['D'] },
+    '2026-08-02': { type: 'wknd', people: ['N', 'Chachiji'] },
+    '2026-08-06': { type: 'thu',  people: ['B'] },
+    '2026-08-08': { type: 'wknd', people: ['Sukh', 'D'] },
+  };
+
+  const UNAVAILABLE = new Set([
+    '2026-06-20','2026-06-22','2026-06-23','2026-06-24',
+    '2026-06-26','2026-06-30','2026-07-01','2026-07-07',
+    '2026-07-10','2026-07-15',
+  ]);
+
+  const PERSON_COLORS = {
+    B:        '#185FA5',
+    N:        '#0F6E56',
+    D:        '#854F0B',
+    Sha:      '#8B2E0A',
+    Sukh:     '#533AB7',
+    Chachiji: '#A32D2D',
+  };
+
+  // ── Helpers ───────────────────────────────────────────────────────
+  function dateKey(y, m, d) {
+    return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+  }
+
+  function mangoSVG(size = 18) {
+    return `<svg width="${size}" height="${Math.round(size * 1.2)}" viewBox="0 0 24 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M12 25C7 25 4 19.5 4 14.5c0-5 2.5-10 8-10 5.5 0 8 5 8 10 0 5-3 10.5-8 10.5z" fill="#C05020"/>
+      <path d="M12 4.5C10 4.5 8.5 3 8 2c1 .5 2.5.5 3-.5C11.5 2.5 12 3.5 12 4.5z" fill="#3B5C1A"/>
+      <path d="M11 6C9 5 7 4 6.5 3c.5.3 3 2 4.5 3z" fill="#3B5C1A"/>
+      <path d="M13 6C15 5 17 4 17.5 3c-.5.3-3 2-4.5 3z" fill="#3B5C1A"/>
+      <ellipse cx="10" cy="16" rx="1.5" ry="2.8" fill="#E8906A" opacity="0.6"/>
+    </svg>`;
+  }
+
+  // ── Render calendar ───────────────────────────────────────────────
+  function renderMonth(year, month, label) {
+    const cal = document.getElementById('calendar');
+
+    const title = document.createElement('div');
+    title.className = 'month-title';
+    title.textContent = label;
+    cal.appendChild(title);
+
+    const dowRow = document.createElement('div');
+    dowRow.className = 'dow-row';
+    ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(d => {
+      const cell = document.createElement('div');
+      cell.className = 'dow-cell';
+      cell.textContent = d;
+      dowRow.appendChild(cell);
+    });
+    cal.appendChild(dowRow);
+
+    const firstDow = new Date(year, month - 1, 1).getDay();
+    const daysInMonth = new Date(year, month, 0).getDate();
+    let weekRow = null;
+    let dayCount = 0;
+
+    function newWeek() {
+      weekRow = document.createElement('div');
+      weekRow.className = 'week-row';
+      cal.appendChild(weekRow);
+    }
+
+    newWeek();
+
+    // Leading empty cells
+    for (let i = 0; i < firstDow; i++) {
+      const empty = document.createElement('div');
+      empty.className = 'day empty';
+      weekRow.appendChild(empty);
+      dayCount++;
+    }
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      if (dayCount > 0 && dayCount % 7 === 0) newWeek();
+
+      const key = dateKey(year, month, d);
+      const cell = document.createElement('div');
+      cell.className = 'day';
+
+      const dow = (firstDow + d - 1) % 7;
+      if (dow === 0 || dow === 6) cell.classList.add('weekend-bg');
+
+      // Day number
+      const dn = document.createElement('div');
+      dn.className = 'day-num';
+      dn.textContent = d;
+      cell.appendChild(dn);
+
+      // Unavailable marker
+      if (UNAVAILABLE.has(key)) {
+        const mark = document.createElement('span');
+        mark.className = 'unavail-mark';
+        mark.setAttribute('aria-label', 'unavailable');
+        mark.textContent = '✕';
+        cell.appendChild(mark);
+      }
+
+      // Session
+      if (SESSIONS[key]) {
+        const s = SESSIONS[key];
+        const pillClass = s.type === 'thu' ? 'pill-thu' : s.type === 'sha' ? 'pill-sha' : 'pill-wknd';
+
+        s.people.forEach(person => {
+          const pill = document.createElement('span');
+          pill.className = `pill ${pillClass}`;
+          pill.style.color = PERSON_COLORS[person];
+          pill.textContent = person;
+          cell.appendChild(pill);
+        });
+
+        const lbl = document.createElement('div');
+        lbl.className = 'day-type-label';
+        lbl.textContent = s.type === 'thu' ? 'Thu eve' : s.type === 'sha' ? 'Weekend ★' : 'Weekend';
+        cell.appendChild(lbl);
+
+        const mango = document.createElement('div');
+        mango.className = 'mango-icon';
+        mango.innerHTML = mangoSVG(16);
+        cell.appendChild(mango);
+      }
+
+      weekRow.appendChild(cell);
+      dayCount++;
+    }
+
+    // Trailing empty cells
+    const remainder = dayCount % 7;
+    if (remainder > 0) {
+      for (let i = remainder; i < 7; i++) {
+        const empty = document.createElement('div');
+        empty.className = 'day empty';
+        weekRow.appendChild(empty);
+      }
+    }
+  }
+
+  renderMonth(2026, 6, 'June 2026');
+  renderMonth(2026, 7, 'July 2026');
+  renderMonth(2026, 8, 'August 2026');
+
+  // ── Summary cards ─────────────────────────────────────────────────
+  const counts = {};
+  const personDates = {};
+  Object.keys(PERSON_COLORS).forEach(p => { counts[p] = 0; personDates[p] = []; });
+
+  Object.entries(SESSIONS).forEach(([date, s]) => {
+    s.people.forEach(p => {
+      counts[p]++;
+      personDates[p].push(date);
+    });
+  });
+
+  const summaryEl = document.getElementById('summary');
+  Object.keys(PERSON_COLORS).forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'summary-card';
+
+    const fmtDate = iso => {
+      const [, , dd] = iso.split('-');
+      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      const mo = months[parseInt(iso.split('-')[1]) - 1];
+      return `${mo} ${parseInt(dd)}`;
+    };
+
+    card.innerHTML = `
+      <div class="summary-name" style="color:${PERSON_COLORS[p]}">${p}</div>
+      <div class="summary-count">${counts[p]}</div>
+      <div class="summary-label">sessions</div>
+      <div class="summary-dates">${personDates[p].map(fmtDate).join(' · ')}</div>
+    `;
+    summaryEl.appendChild(card);
+  });
+</script>
+</body>
+</html>
